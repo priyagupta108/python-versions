@@ -1,6 +1,7 @@
 set -e
 
 PYTHON_FULL_VERSION="{{__VERSION_FULL__}}"
+ARCH="{{__ARCH__}}"
 MAJOR_VERSION=$(echo $PYTHON_FULL_VERSION | cut -d '.' -f 1)
 MINOR_VERSION=$(echo $PYTHON_FULL_VERSION | cut -d '.' -f 2)
 
@@ -17,7 +18,7 @@ fi
 
 PYTHON_TOOLCACHE_PATH=$TOOLCACHE_ROOT/Python
 PYTHON_TOOLCACHE_VERSION_PATH=$PYTHON_TOOLCACHE_PATH/$PYTHON_FULL_VERSION
-PYTHON_TOOLCACHE_VERSION_ARCH_PATH=$PYTHON_TOOLCACHE_VERSION_PATH/x64
+PYTHON_TOOLCACHE_VERSION_ARCH_PATH=$PYTHON_TOOLCACHE_VERSION_PATH/$ARCH
 
 echo "Check if Python hostedtoolcache folder exist..."
 if [ ! -d $PYTHON_TOOLCACHE_PATH ]; then
@@ -53,4 +54,4 @@ echo "Upgrading pip..."
 ./python -m pip install --ignore-installed pip --disable-pip-version-check --no-warn-script-location --root-user-action=ignore
 
 echo "Create complete file"
-touch $PYTHON_TOOLCACHE_VERSION_PATH/x64.complete
+touch $PYTHON_TOOLCACHE_VERSION_PATH/$ARCH.complete
