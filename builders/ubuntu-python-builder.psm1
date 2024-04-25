@@ -13,6 +13,10 @@ class UbuntuPythonBuilder : NixPythonBuilder {
 
     .PARAMETER version
     The version of Python that should be built.
+    
+    .PARAMETER architecture
+    The architecture with which Python should be built.
+
 
     #>
 

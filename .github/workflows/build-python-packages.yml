@@ -15,7 +15,7 @@ on:
       PLATFORMS:
         description: 'Platforms for execution in "os" or "os_arch" format (arch is "x64" by default)'
         required: true
-        default: 'ubuntu-20.04,ubuntu-22.04,macos-11_x64,macos-11_arm64,windows-2019_x64,windows-2019_x86'
+        default: 'ubuntu-20.04,ubuntu-20.04_arm64,ubuntu-22.04,ubuntu-22.04_arm64,macos-11_x64,macos-11_arm64,windows-2019_x64,windows-2019_x86'
   pull_request:
     paths-ignore:
     - 'versions-manifest.json'
@@ -39,7 +39,7 @@ jobs:
       - name: Generate execution matrix
         id: generate-matrix
         run: |
-          [String[]]$configurations = "${{ inputs.platforms || 'ubuntu-20.04,ubuntu-22.04,macos-11,macos-11_arm64,windows-2019_x64,windows-2019_x86' }}".Split(",").Trim()
+          [String[]]$configurations = "${{ inputs.platforms || 'ubuntu-20.04,ubuntu-20.04_arm64,ubuntu-22.04,ubuntu-22.04_arm64,macos-11,macos-11_arm64,windows-2019_x64,windows-2019_x86' }}".Split(",").Trim()
           $matrix = @()
 
           foreach ($configuration in $configurations) {
@@ -71,7 +71,7 @@ jobs:
     steps:
 
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -81,7 +81,7 @@ jobs:
                   -Platform ${{ matrix.platform }} -Architecture ${{ matrix.arch }}
 
       - name: Publish artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ runner.temp }}/artifact
@@ -98,7 +98,7 @@ jobs:
     steps:
 
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           submodules: true
 
@@ -230,4 +230,3 @@ jobs:
             workflow_id: 'create-pr.yml',
             ref: 'main'
           });
-
