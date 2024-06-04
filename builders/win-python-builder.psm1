@@ -47,23 +47,26 @@ class WinPythonBuilder : PythonBuilder {
         return $extension
     }
 
-    [string] GetArchitectureExtension() {
-        <#
-        .SYNOPSIS
-        Return architecture suffix for Python executable. 
-        #>
+   [string] GetArchitectureExtension() {
+    <#
+    .SYNOPSIS
+    Return architecture suffix for Python executable. 
+    #>
 
-        $ArchitectureExtension = ""
-        if ($this.Architecture -eq "x64") {
-            if ($this.Version -ge "3.5") {
-                $ArchitectureExtension = "-amd64"
-            } else {
-                $ArchitectureExtension = ".amd64"
-            }
+    $ArchitectureExtension = ""
+    if ($this.Architecture -eq "x64") {
+        if ($this.Version -ge "3.5") {
+            $ArchitectureExtension = "-amd64"
+        } else {
+            $ArchitectureExtension = ".amd64"
         }
-
-        return $ArchitectureExtension
     }
+    elseif ($this.Architecture -eq "arm64") {
+        $ArchitectureExtension = "-arm64"
+    }
+
+    return $ArchitectureExtension
+}
 
     [uri] GetSourceUri() {
         <#
