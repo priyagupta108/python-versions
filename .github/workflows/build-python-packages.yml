@@ -15,7 +15,7 @@ on:
       PLATFORMS:
         description: 'Platforms for execution in "os" or "os_arch" format (arch is "x64" by default)'
         required: true
-        default: 'ubuntu-20.04,ubuntu-22.04,ubuntu-24.04,macos-11_x64,macos-11_arm64,windows-2019_x64,windows-2019_x86'
+        default: 'ubuntu-20.04,ubuntu-22.04,ubuntu-24.04,macos-11_x64,macos-11_arm64,windows-2019_x64,windows-2019_x86,windows-2019_arm64'
   pull_request:
     paths-ignore:
     - 'versions-manifest.json'
@@ -39,7 +39,7 @@ jobs:
       - name: Generate execution matrix
         id: generate-matrix
         run: |
-          [String[]]$configurations = "${{ inputs.platforms || 'ubuntu-20.04,ubuntu-22.04,ubuntu-24.04,macos-11,macos-11_arm64,windows-2019_x64,windows-2019_x86' }}".Split(",").Trim()
+          [String[]]$configurations = "${{ inputs.platforms || 'ubuntu-20.04,ubuntu-22.04,ubuntu-24.04,macos-11,macos-11_arm64,windows-2019_x64,windows-2019_x86,windows-2019_arm64' }}".Split(",").Trim()
           $matrix = @()
 
           foreach ($configuration in $configurations) {
@@ -66,6 +66,8 @@ jobs:
       matrix:
         include: ${{ fromJson(needs.generate_matrix.outputs.matrix) }}
     runs-on: ${{ matrix.os }}
+    outputs:
+      matrixReduced: ${{ steps.build-python.outputs.matrixReduced }}
     env:
       ARTIFACT_NAME: python-${{ inputs.VERSION || '3.12.3' }}-${{ matrix.platform }}-${{ matrix.arch }}
     steps:
@@ -85,6 +87,14 @@ jobs:
         with:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ runner.temp }}/artifact
+
+      - name: Prepare matrix
+        id: build-python
+        run: |
+          $matrix = '${{ needs.generate_matrix.outputs.matrix }}' | ConvertFrom-Json -AsHashtable
+          $matrixReduced = $matrix | Where-Object {$_.arch -ne "arm64" -or $_.os -ne "windows-2019"}
+          $matrixReduced | Out-String | Write-Host
+          echo "matrixReduced=$($matrixReduced | ConvertTo-Json -Compress -AsArray)" >> $env:GITHUB_OUTPUT
 
   test_python:
     needs: [generate_matrix, build_python]
