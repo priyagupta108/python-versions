@@ -23,7 +23,7 @@ Required parameter. The platform for which Python will be built.
 param(
     [Parameter (Mandatory=$true)][semver] $Version,
     [Parameter (Mandatory=$true)][string] $Platform,
-    [string] $Architecture = "x64"
+    [string] $Architecture
 )
 
 Import-Module (Join-Path $PSScriptRoot "../helpers" | Join-Path -ChildPath "common-helpers.psm1") -DisableNameChecking
