@@ -9,7 +9,7 @@ function Get-RegistryVersionFilter {
         [Parameter(Mandatory)][Int32] $MinorVersion
     )
 
- 
+    
     # $archFilter = switch ($Architecture) {
     #  'x86' { "32-bit" }
     #  'arm64' { "64-bit (arm64)" }
@@ -18,9 +18,9 @@ function Get-RegistryVersionFilter {
     $archFilter = switch ($Architecture) {
         'x86' { "32-bit" }
         'x64' { "64-bit" }
-        'arm64' { "ARM64" }
+        'arm64' { "64-bit" }
     }
-     ### Python 2.7 x86 have no architecture postfix
+    ### Python 2.7 x86 have no architecture postfix
     if (($Architecture -eq "x86") -and ($MajorVersion -eq 2)) {
         "Python $MajorVersion.$MinorVersion.\d+$"
     } else {
@@ -133,7 +133,7 @@ Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -PythonArchPath $PythonArchPath
 
 cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
-if ($LASTEXITCODE -ne 0) {  
+if ($LASTEXITCODE -ne 0) {
     Throw "Error happened during Python installation"
 }
 # Add this line to list the directory contents
@@ -141,7 +141,6 @@ Write-Host "Contents of $PythonArchPath"
 Get-ChildItem -Path $PythonArchPath
 
 Write-Host "Create `python3` symlink"
-
 if ($MajorVersion -ne "2") {
     New-Item -Path "$PythonArchPath\python3.exe" -ItemType SymbolicLink -Value "$PythonArchPath\python.exe"
 }
