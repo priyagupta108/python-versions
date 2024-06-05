@@ -9,17 +9,7 @@ function Get-RegistryVersionFilter {
         [Parameter(Mandatory)][Int32] $MinorVersion
     )
 
-    
-    # $archFilter = switch ($Architecture) {
-    #  'x86' { "32-bit" }
-    #  'arm64' { "64-bit (arm64)" }
-    #  default { "64-bit" }
-    # }
-    $archFilter = switch ($Architecture) {
-        'x86' { "32-bit" }
-        'x64' { "64-bit" }
-        'arm64' { "64-bit" }
-    }
+    $archFilter = if ($Architecture -eq 'x86') { "32-bit" } else { "64-bit" }
     ### Python 2.7 x86 have no architecture postfix
     if (($Architecture -eq "x86") -and ($MajorVersion -eq 2)) {
         "Python $MajorVersion.$MinorVersion.\d+$"
@@ -129,10 +119,18 @@ New-Item -ItemType Directory -Path $PythonArchPath -Force | Out-Null
 Write-Host "Copy Python binaries to $PythonArchPath"
 Copy-Item -Path ./$PythonExecName -Destination $PythonArchPath | Out-Null
 
+Write-Host "PythonExecName: $PythonExecName"
+Write-Host "ExecParams: $ExecParams"
+Write-Host "PythonArchPath: $PythonArchPath"
+
+
 Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -PythonArchPath $PythonArchPath
 
 cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
+Write-Host "Installation exit code: $LASTEXITCODE"
+
+
 if ($LASTEXITCODE -ne 0) {
     Throw "Error happened during Python installation"
 }
