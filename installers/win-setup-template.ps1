@@ -123,9 +123,12 @@ Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -PythonArchPath $PythonArchPath
 
 cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
-if ($LASTEXITCODE -ne 0) {
+if ($LASTEXITCODE -ne 0) {  
     Throw "Error happened during Python installation"
 }
+# Add this line to list the directory contents
+Write-Host "Contents of $PythonArchPath:"
+Get-ChildItem -Path $PythonArchPath
 
 Write-Host "Create `python3` symlink"
 if ($MajorVersion -ne "2") {

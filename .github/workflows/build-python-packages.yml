@@ -88,13 +88,13 @@ jobs:
           name: ${{ env.ARTIFACT_NAME }}
           path: ${{ runner.temp }}/artifact
 
-      - name: Prepare matrix
-        id: build-python
-        run: |
-          $matrix = '${{ needs.generate_matrix.outputs.matrix }}' | ConvertFrom-Json -AsHashtable
-          $matrixReduced = $matrix | Where-Object {$_.arch -ne "arm64" -or $_.os -ne "windows-2019"}
-          $matrixReduced | Out-String | Write-Host
-          echo "matrixReduced=$($matrixReduced | ConvertTo-Json -Compress -AsArray)" >> $env:GITHUB_OUTPUT
+      # - name: Prepare matrix
+      #   id: build-python
+      #   run: |
+      #     $matrix = '${{ needs.generate_matrix.outputs.matrix }}' | ConvertFrom-Json -AsHashtable
+      #     $matrixReduced = $matrix | Where-Object {$_.arch -ne "arm64" -or $_.os -ne "windows-2019"}
+      #     $matrixReduced | Out-String | Write-Host
+      #     echo "matrixReduced=$($matrixReduced | ConvertTo-Json -Compress -AsArray)" >> $env:GITHUB_OUTPUT
 
   test_python:
     needs: [generate_matrix, build_python]
