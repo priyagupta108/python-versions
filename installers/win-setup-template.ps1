@@ -127,7 +127,7 @@ if ($LASTEXITCODE -ne 0) {
     Throw "Error happened during Python installation"
 }
 # Add this line to list the directory contents
-Write-Host "Contents of $PythonArchPath:"
+Write-Host "Contents of $PythonArchPath"
 Get-ChildItem -Path $PythonArchPath
 
 Write-Host "Create `python3` symlink"
