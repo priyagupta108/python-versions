@@ -26,17 +26,18 @@ class WinPythonBuilder : PythonBuilder {
     [string] $InstallationScriptName
     [string] $OutputArtifactName
 
-    WinPythonBuilder(
+        WinPythonBuilder(
         [semver] $version,
         [string] $architecture,
         [string] $platform
     ) : Base($version, $architecture, $platform) {
         $this.InstallationTemplateName = "win-setup-template.ps1"
         $this.InstallationScriptName = "setup.ps1"
-        $this.OutputArtifactName = "python-$Version-$Platform-$Architecture.zip"
+         $this.OutputArtifactName = "python-$Version-$Platform-$Architecture.zip"
+       
     }
-
-    [string] GetPythonExtension() {
+    
+   [string] GetPythonExtension() {
         <#
         .SYNOPSIS
         Return extension for required version of Python executable. 
@@ -47,19 +48,21 @@ class WinPythonBuilder : PythonBuilder {
         return $extension
     }
 
-   [string] GetArchitectureExtension() {
+    [string] GetArchitectureExtension() {
     <#
     .SYNOPSIS
     Return architecture suffix for Python executable. 
     #>
 
     $ArchitectureExtension = ""
-    if ($this.Architecture -eq "x64") {
+        if ($this.Architecture -eq "x64") {
         if ($this.Version -ge "3.5") {
             $ArchitectureExtension = "-amd64"
         } else {
             $ArchitectureExtension = ".amd64"
         }
+    } elseif ($this.Architecture -eq "arm64") {
+        $ArchitectureExtension = "-arm64"
     }
 
     return $ArchitectureExtension
