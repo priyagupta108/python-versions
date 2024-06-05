@@ -122,6 +122,7 @@ Copy-Item -Path ./$PythonExecName -Destination $PythonArchPath | Out-Null
 Write-Host "PythonExecName: $PythonExecName"
 Write-Host "ExecParams: $ExecParams"
 Write-Host "PythonArchPath: $PythonArchPath"
+Write-Host "IsMSI: $IsMSI"
 
 
 Write-Host "Install Python $Version in $PythonToolcachePath..."
