@@ -9,9 +9,9 @@ function Get-RegistryVersionFilter {
         [Parameter(Mandatory)][Int32] $MinorVersion
     )
 
-    $archFilter = if ($Architecture -eq 'arm64') { "32-bit" } else { "64-bit" }
+    $archFilter = if ($Architecture -eq 'x86') { "32-bit" } else { "64-bit" }
     ### Python 2.7 x86 have no architecture postfix
-    if (($Architecture -eq "arm64") -and ($MajorVersion -eq 2)) {
+    if (($Architecture -eq "x86") -and ($MajorVersion -eq 2)) {
         "Python $MajorVersion.$MinorVersion.\d+$"
     } else {
         "Python $MajorVersion.$MinorVersion.*($archFilter)"
