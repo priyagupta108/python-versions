@@ -235,7 +235,10 @@ jobs:
         run: |
           $pythonLocation = which python
           if ('${{ matrix.platform }}' -eq 'darwin') { otool -L $pythonLocation } else { ldd $pythonLocation }
-
+      - name: Print Tcl/Tk version
+        run: |
+            echo 'puts [info patchlevel];exit 0' | tclsh
+            echo 'puts $tcl_version;exit 0' | tclsh
       - name: Run tests
         run: |
             Install-Module Pester -Force -Scope CurrentUser -SkipPublisherCheck
