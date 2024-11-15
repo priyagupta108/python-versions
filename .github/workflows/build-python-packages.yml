@@ -80,6 +80,18 @@ jobs:
     env:
       ARTIFACT_NAME: python-${{ inputs.VERSION || '3.12.3' }}-${{ matrix.platform }}-${{ matrix.arch }}
     steps:
+      - name: Print Tcl/Tk version before update
+        run: |
+            echo 'puts [info patchlevel];exit 0' | tclsh
+            echo 'puts $tcl_version;exit 0' | tclsh
+      - name: Install Tcl/Tk 9.0.0
+        run: |
+          brew update
+          brew install tcl-tk
+      - name: Print Tcl/Tk version
+        run: |
+            echo 'puts [info patchlevel];exit 0' | tclsh
+            echo 'puts $tcl_version;exit 0' | tclsh
       - name: Setup Environment on Windows ARM64 Runner
         if: matrix.os == 'setup-actions-windows-arm64-4-core'
         shell: powershell
@@ -131,6 +143,18 @@ jobs:
     env:
       ARTIFACT_NAME: python-${{ inputs.VERSION || '3.12.3' }}-${{ matrix.platform }}-${{ matrix.arch }}
     steps:
+      - name: Print Tcl/Tk version before update
+        run: |
+            echo 'puts [info patchlevel];exit 0' | tclsh
+            echo 'puts $tcl_version;exit 0' | tclsh
+      - name: Install Tcl/Tk 9.0.0
+        run: |
+          brew update
+          brew install tcl-tk
+      - name: Print Tcl/Tk version
+        run: |
+            echo 'puts [info patchlevel];exit 0' | tclsh
+            echo 'puts $tcl_version;exit 0' | tclsh
       - name: Setup Environment on Windows ARM64 Runner
         if: matrix.os == 'setup-actions-windows-arm64-4-core'
         shell: powershell
