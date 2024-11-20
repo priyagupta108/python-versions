@@ -84,7 +84,7 @@ class macOSPythonBuilder : NixPythonBuilder {
          #        $configureString += " --with-tcltk-includes='-I /usr/local/opt/tcl-tk/include' --with-tcltk-libs='-L/usr/local/opt/tcl-tk/lib -ltcl9 -ltk9'"
 	        # }
             if ($this.Version -gt "3.7.12") {
-                $configureString += " --with-tcltk-includes='-I /usr/local/opt/tcl-tk/include/tcl-tk' --with-tcltk-libs='-L/usr/local/opt/tcl-tk/lib -ltcl9.0.0 -ltk9.0.0'"
+                $configureString += " --with-tcltk-includes='-I /usr/local/opt/tcl-tk/include/tcl-tk' --with-tcltk-libs='-L/usr/local/opt/tcl-tk/lib -ltcl9.0 -ltk9.0'"
              }
 	     
             if ($this.Version -eq "3.7.17") {
