@@ -239,6 +239,10 @@ jobs:
         run: |
             echo 'puts [info patchlevel];exit 0' | tclsh
             echo 'puts $tcl_version;exit 0' | tclsh
+
+      - name: Verify Python Tk Version
+        run: |
+          python -c "import tkinter; print(f'Tkinter TkVersion: {tkinter.TkVersion}')"       
       - name: Run tests
         run: |
             Install-Module Pester -Force -Scope CurrentUser -SkipPublisherCheck
