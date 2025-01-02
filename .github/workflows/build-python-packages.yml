@@ -15,7 +15,6 @@ on:
       THREADING_BUILD_MODES:
         description: 'CPython threading build modes'
         required: true
-        type: string
         default: 'default,freethreaded'
       PLATFORMS:
         description: 'Platforms for execution in "os" or "os_arch" format (arch is "x64" by default)'
