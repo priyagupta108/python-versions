@@ -4,7 +4,7 @@ on:
 
 jobs:
   create-pr:
-    uses: priya-kinthali/versions-package-tools/.github/workflows/create-pr-to-update-manifest.yml@test-319-pr
+    uses: actions/versions-package-tools/.github/workflows/create-pr-to-update-manifest.yml@main
     with:
       tool-name: "python"
     secrets: inherit
