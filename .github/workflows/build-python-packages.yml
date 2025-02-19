@@ -96,7 +96,7 @@ jobs:
       ARTIFACT_NAME: python-${{ inputs.VERSION || '3.12.3' }}-${{ matrix.platform }}-${{ matrix.arch }}
     steps:
       - name: Setup Environment on Windows ARM64 Runner
-        if: matrix.os == 'setup-actions-windows-arm64-4-core'
+        if: matrix.os == 'self-hosted'
         shell: powershell
         run: |
             # Install Chocolatey
@@ -151,7 +151,7 @@ jobs:
       ARTIFACT_NAME: python-${{ inputs.VERSION || '3.12.3' }}-${{ matrix.platform }}-${{ matrix.arch }}
     steps:
       - name: Setup Environment on Windows ARM64 Runner
-        if: matrix.os == 'setup-actions-windows-arm64-4-core'
+        if: matrix.os == 'self-hosted'
         shell: powershell
         run: |
             # Install Chocolatey
