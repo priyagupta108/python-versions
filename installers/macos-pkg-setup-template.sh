@@ -63,6 +63,16 @@ echo "Create additional symlinks (Required for the UsePythonVersion Azure Pipeli
 ln -s ./bin/$PYTHON_MAJOR_DOT_MINOR python
 chmod +x python
 
+# Check if symlinks were created
+for link in bin include share lib python; do
+    if [ -L "$link" ]; then
+        echo "Symlink $link created successfully."
+    else
+        echo "Failed to create symlink $link."
+    fi
+done
+
+
 # Note that bin is a symlink so referencing .. from bin will not work as expected
 cd bin/
 
