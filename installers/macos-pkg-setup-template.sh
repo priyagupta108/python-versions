@@ -58,7 +58,7 @@ ln -s "${PYTHON_FRAMEWORK_PATH}/bin" bin
 ln -s "${PYTHON_FRAMEWORK_PATH}/include" include
 ln -s "${PYTHON_FRAMEWORK_PATH}/share" share
 ln -s "${PYTHON_FRAMEWORK_PATH}/lib" lib
-
+echo "Current working directory: $(pwd)"
 echo "Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)"
 ln -s ./bin/$PYTHON_MAJOR_DOT_MINOR python
 chmod +x python
