@@ -5,13 +5,18 @@ on:
     inputs:
       VERSION:
         description: 'Python version to build and upload'
-        default: '3.12.3'
+        default: '3.13.1'
         required: true
       PUBLISH_RELEASES:
         description: 'Whether to publish releases'
         required: true
         type: boolean
         default: false
+      THREADING_BUILD_MODES:
+        description: 'CPython threading build modes'
+        required: true
+        type: string
+        default: 'default,freethreaded'
       PLATFORMS:
         description: 'Platforms for execution in "os" or "os_arch" format (arch is "x64" by default)'
         required: true
@@ -40,32 +45,42 @@ jobs:
         id: generate-matrix
         run: |
           [String[]]$configurations = "${{ inputs.platforms || 'ubuntu-20.04,ubuntu-22.04,ubuntu-22.04_arm64,ubuntu-24.04,ubuntu-24.04_arm64,macos-13,macos-14_arm64,windows-2019_x64,windows-2019_x86,windows-2019_arm64' }}".Split(",").Trim()
+          [String[]]$buildModes = "${{ inputs.threading_build_modes || 'default' }}".Split(",").Trim()
           $matrix = @()
           
           foreach ($configuration in $configurations) {
-            $parts = $configuration.Split("_")
-            $os = $parts[0]
-            $arch = if ($parts[1]) {$parts[1]} else {"x64"}
-            switch -wildcard ($os) {
-              "*ubuntu*" { $platform = $os.Replace("ubuntu","linux")}
-              "*macos*" { $platform = 'darwin' }
-              "*windows*" { $platform = 'win32' }
-            }
-            
-            if ($configuration -eq "ubuntu-22.04_arm64") {
-              $os = "setup-actions-ubuntu-arm64-2-core"
-            }
-            elseif ($configuration -eq "ubuntu-24.04_arm64") {
-              $os = "setup-actions-ubuntu24-arm64-2-core"
-            }
-            elseif ($configuration -eq "windows-2019_arm64") {
-              $os = "setup-actions-windows-arm64-4-core"
-            }
-            
-            $matrix += @{
-              'platform' = $platform
-              'os' = $os
-              'arch' = $arch
+            foreach ($buildMode in $buildModes) {
+              $parts = $configuration.Split("_")
+              $os = $parts[0]
+              $arch = if ($parts[1]) {$parts[1]} else {"x64"}
+              switch -wildcard ($os) {
+                "*ubuntu*" { $platform = $os.Replace("ubuntu","linux")}
+                "*macos*" { $platform = 'darwin' }
+                "*windows*" { $platform = 'win32' }
+              }
+
+              if ($configuration -eq "ubuntu-22.04_arm64") {
+                $os = "ubuntu-22.04-arm"
+              }
+              elseif ($configuration -eq "ubuntu-24.04_arm64") {
+                $os = "ubuntu-24.04-arm"
+              }
+              elseif ($configuration -eq "windows-2019_arm64") {
+                $os = "self-hosted"
+              }
+
+              if ($buildMode -eq "freethreaded") {
+                if ([semver]"${{ inputs.VERSION }}" -lt [semver]"3.13.0") {
+                  continue;
+                }
+                $arch += "-freethreaded"
+              }
+
+              $matrix += @{
+                'platform' = $platform
+                'os' = $os
+                'arch' = $arch
+              }
             }
           }
           echo "matrix=$($matrix | ConvertTo-Json -Compress -AsArray)" >> $env:GITHUB_OUTPUT
@@ -81,28 +96,37 @@ jobs:
       ARTIFACT_NAME: python-${{ inputs.VERSION || '3.12.3' }}-${{ matrix.platform }}-${{ matrix.arch }}
     steps:
       - name: Setup Environment on Windows ARM64 Runner
-        if: matrix.os == 'setup-actions-windows-arm64-4-core'
+        if: matrix.os == 'self-hosted'
         shell: powershell
         run: |
-            # Install Chocolatey
+            # Ensure Execution Policy is set to Bypass
             Set-ExecutionPolicy Bypass -Scope Process -Force
+            
+            # Set Security Protocol
             [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+            
+            # Remove existing Chocolatey installation if present
+            if (Test-Path "C:\ProgramData\chocolatey") {
+                Remove-Item -Recurse -Force "C:\ProgramData\chocolatey"
+            }
+            
+            # Install Chocolatey
             iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            
+            # Update PATH
             echo "C:\ProgramData\Chocolatey\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-        
+            
             # Install PowerShell
             choco install powershell-core -y
             echo "C:\Program Files\PowerShell\7" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-        
+            
             # Install Git
             choco install git -y
             echo "C:\Program Files\Git\cmd" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-        
             
-             # Install 7-Zip
+            # Install 7-Zip
             choco install 7zip -y
             echo "C:\ProgramData\chocolatey\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-            
 
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -136,28 +160,38 @@ jobs:
       ARTIFACT_NAME: python-${{ inputs.VERSION || '3.12.3' }}-${{ matrix.platform }}-${{ matrix.arch }}
     steps:
       - name: Setup Environment on Windows ARM64 Runner
-        if: matrix.os == 'setup-actions-windows-arm64-4-core'
+        if: matrix.os == 'self-hosted'
         shell: powershell
         run: |
-            # Install Chocolatey
+            # Ensure Execution Policy is set to Bypass
             Set-ExecutionPolicy Bypass -Scope Process -Force
+            
+            # Set Security Protocol
             [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+            
+            # Remove existing Chocolatey installation if present
+            if (Test-Path "C:\ProgramData\chocolatey") {
+                Remove-Item -Recurse -Force "C:\ProgramData\chocolatey"
+            }
+            
+            # Install Chocolatey
             iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+            
+            # Update PATH
             echo "C:\ProgramData\Chocolatey\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-        
+            
             # Install PowerShell
             choco install powershell-core -y
             echo "C:\Program Files\PowerShell\7" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-        
+            
             # Install Git
             choco install git -y
             echo "C:\Program Files\Git\cmd" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-        
             
-             # Install 7-Zip
+            # Install 7-Zip
             choco install 7zip -y
             echo "C:\ProgramData\chocolatey\bin" | Out-File -Append -FilePath $env:GITHUB_PATH -Encoding utf8
-            
+ 
       - name: Check out repository code
         uses: actions/checkout@v4
         with:
@@ -204,6 +238,9 @@ jobs:
         with:
           python-version: ${{ env.VERSION }}
           architecture: ${{ matrix.arch }}
+
+      - name: Python version
+        run: python -VVV
 
       - name: Verbose sysconfig dump
         if: runner.os == 'Linux' || runner.os == 'macOS'
@@ -296,5 +333,5 @@ jobs:
             owner: context.repo.owner,
             repo: context.repo.repo,
             workflow_id: 'create-pr.yml',
-            ref: 'main'
+            ref: 'freethreaded-pr-319'
           });
