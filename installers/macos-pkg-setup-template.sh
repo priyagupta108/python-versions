@@ -58,20 +58,23 @@ ln -s "${PYTHON_FRAMEWORK_PATH}/bin" bin
 ln -s "${PYTHON_FRAMEWORK_PATH}/include" include
 ln -s "${PYTHON_FRAMEWORK_PATH}/share" share
 ln -s "${PYTHON_FRAMEWORK_PATH}/lib" lib
-echo "Current working directory: $(pwd)"
+
 echo "Create additional symlinks (Required for the UsePythonVersion Azure Pipelines task and the setup-python GitHub Action)"
 ln -s ./bin/$PYTHON_MAJOR_DOT_MINOR python
 chmod +x python
 
-# Check if symlinks were created
-for link in bin include share lib python; do
-    if [ -L "$link" ]; then
-        echo "Symlink $link created successfully."
-    else
-        echo "Failed to create symlink $link."
-    fi
-done
+# Print the value of the variable $PYTHON_MAJOR_DOT_MINOR
+echo "Value of PYTHON_MAJOR_DOT_MINOR: $PYTHON_MAJOR_DOT_MINOR"
 
+# Check if the symlink was created successfully
+if [ -L "python" ]; then
+    echo "Symlink 'python' created successfully."
+else
+    echo "Failed to create symlink 'python'."
+fi
+
+# Check the permissions of the symlink
+ls -la python
 
 # Note that bin is a symlink so referencing .. from bin will not work as expected
 cd bin/
