@@ -133,6 +133,8 @@ cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
 
 $PythonExePath = Join-Path -Path $PythonArchPath -ChildPath "python.exe"
 if ($LASTEXITCODE -ne 0 -or -not (Test-Path $PythonExePath)) {
+    Write-Host "PythonExePath $PythonExePath"
+    Write-Host "Python installation failed with exit code $LASTEXITCODE"
     Write-Host "Python installation failed or python.exe missing in $PythonArchPath"
     Write-Host "Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
     Throw "Error happened during Python installation"
