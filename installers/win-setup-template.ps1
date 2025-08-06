@@ -122,10 +122,14 @@ Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -IsFreeThreaded $IsFreeThreaded -PythonArchPath $PythonArchPath
 
 cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
+# if ($LASTEXITCODE -ne 0) {
+#     Throw "Error happened during Python installation"
+# }
 if ($LASTEXITCODE -ne 0) {
+    Write-Host "Python installation failed with exit code $LASTEXITCODE"
+    Write-Host "Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
     Throw "Error happened during Python installation"
 }
-
 if ($IsFreeThreaded) {
     # Delete python.exe and create a symlink to free-threaded exe
     Remove-Item -Path "$PythonArchPath\python.exe" -Force
