@@ -125,8 +125,13 @@ cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
 # if ($LASTEXITCODE -ne 0) {
 #     Throw "Error happened during Python installation"
 # }
-if ($LASTEXITCODE -ne 0) {
-    Write-Host "Python installation failed with exit code $LASTEXITCODE"
+# if ($LASTEXITCODE -ne 0) {
+#     Write-Host "Python installation failed with exit code $LASTEXITCODE"
+#     Write-Host "Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
+#     Throw "Error happened during Python installation"
+# }
+if ($LASTEXITCODE -ne 0 -or -not (Test-Path $PythonExePath)) {
+    Write-Host "Python installation failed or python.exe missing in $PythonArchPath"
     Write-Host "Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
     Throw "Error happened during Python installation"
 }
