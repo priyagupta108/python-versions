@@ -122,23 +122,31 @@ Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -IsFreeThreaded $IsFreeThreaded -PythonArchPath $PythonArchPath
 
 cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
-# if ($LASTEXITCODE -ne 0) {
-#     Throw "Error happened during Python installation"
-# }
-# if ($LASTEXITCODE -ne 0) {
-#     Write-Host "Python installation failed with exit code $LASTEXITCODE"
-#     Write-Host "Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
-#     Throw "Error happened during Python installation"
-# }
 
 $PythonExePath = Join-Path -Path $PythonArchPath -ChildPath "python.exe"
-if ($LASTEXITCODE -ne 0 -or -not (Test-Path $PythonExePath)) {
-    Write-Host "PythonExePath $PythonExePath"
+if (Test-Path $PythonExePath) {
+    Write-Host "python.exe is present at $PythonExePath"
+} else {
+    Write-Host "python.exe is NOT present at $PythonExePath"
+}
+
+# if ($LASTEXITCODE -ne 0) {
+#     Throw "Error happened during Python installation"
+# }
+if ($LASTEXITCODE -ne 0) {
     Write-Host "Python installation failed with exit code $LASTEXITCODE"
-    Write-Host "Python installation failed or python.exe missing in $PythonArchPath"
     Write-Host "Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
     Throw "Error happened during Python installation"
 }
+
+# $PythonExePath = Join-Path -Path $PythonArchPath -ChildPath "python.exe"
+# if ($LASTEXITCODE -ne 0 -or -not (Test-Path $PythonExePath)) {
+#     Write-Host "PythonExePath $PythonExePath"
+#     Write-Host "Python installation failed with exit code $LASTEXITCODE"
+#     Write-Host "Python installation failed or python.exe missing in $PythonArchPath"
+#     Write-Host "Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
+#     Throw "Error happened during Python installation"
+# }
 
 if ($IsFreeThreaded) {
     # Delete python.exe and create a symlink to free-threaded exe
