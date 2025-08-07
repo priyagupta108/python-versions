@@ -121,9 +121,7 @@ Copy-Item -Path ./$PythonExecName -Destination $PythonArchPath | Out-Null
 Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -IsFreeThreaded $IsFreeThreaded -PythonArchPath $PythonArchPath
 
-# cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
-cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /verbose"
-
+cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
 
 Write-Host "Contents of $PythonArchPath after install:"
 Get-ChildItem $PythonArchPath | Write-Host
