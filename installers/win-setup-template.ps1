@@ -126,7 +126,7 @@ cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
 Write-Host "Contents of $PythonArchPath after install:"
 Get-ChildItem $PythonArchPath | Write-Host
 
-
+Write-Host "The value of IsMSI is: $IsMSI"
 $PythonExePath = Join-Path -Path $PythonArchPath -ChildPath "python.exe"
 if (Test-Path $PythonExePath) {
     Write-Host "python.exe is present at $PythonExePath"
