@@ -56,7 +56,7 @@ jobs:
               switch -wildcard ($os) {
                 "*ubuntu*" { $platform = $os.Replace("ubuntu","linux"); if ($arch -eq "arm64" ) { $os = "${os}-arm" } }
                 "*macos*" { $platform = 'darwin' }
-                "*windows*" { $platform = 'win32'; if ($arch -eq "arm64" ) { $os = "${os}" } }
+                "*windows*" { $platform = 'win32'; if ($arch -eq "arm64" ) { $os = "${os}-arm" } }
               }
 
               if ($buildMode -eq "freethreaded") {
