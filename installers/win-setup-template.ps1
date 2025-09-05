@@ -134,7 +134,8 @@ Write-Host "LOG::::PowerShell `\$env:PROCESSOR_IDENTIFIER: $env:PROCESSOR_IDENTI
 # Print OS architecture (system bitness)
 $SystemArchitecture = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
 Write-Host "LOG::::\$SystemArchitecture from (Get-CimInstance Win32_OperatingSystem).OSArchitecture: $SystemArchitecture"
-
+# Prints the native architecture of the host (hardware/OS)
+Write-Host "LOG::::Host native architecture: $((Get-CimInstance Win32_Processor).Architecture)"
 # Print process architecture (PowerShell process)
 $SystemArchitectureEnv = $env:PROCESSOR_ARCHITECTURE
 Write-Host "LOG::::\$SystemArchitecture from \$env:PROCESSOR_ARCHITECTURE: $SystemArchitectureEnv"
