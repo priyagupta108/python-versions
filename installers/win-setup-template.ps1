@@ -122,6 +122,47 @@ Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -IsFreeThreaded $IsFreeThreaded -PythonArchPath $PythonArchPath
 
 cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
+
+Write-Host "LOG::::Architecture value $Architecture"
+Write-Host "LOG::::HardwareArchitecture value $HardwareArchitecture"
+# PowerShell print platform info
+
+# Print PowerShell environment variables
+Write-Host "LOG::::PowerShell `\$env:PROCESSOR_ARCHITECTURE: $env:PROCESSOR_ARCHITECTURE"
+Write-Host "LOG::::PowerShell `\$env:PROCESSOR_IDENTIFIER: $env:PROCESSOR_IDENTIFIER"
+
+# Print OS architecture (system bitness)
+$SystemArchitecture = (Get-CimInstance Win32_OperatingSystem).OSArchitecture
+Write-Host "LOG::::\$SystemArchitecture from (Get-CimInstance Win32_OperatingSystem).OSArchitecture: $SystemArchitecture"
+
+# Print process architecture (PowerShell process)
+$SystemArchitectureEnv = $env:PROCESSOR_ARCHITECTURE
+Write-Host "LOG::::\$SystemArchitecture from \$env:PROCESSOR_ARCHITECTURE: $SystemArchitectureEnv"
+
+# Print platform info using Python (must have python in path)
+Write-Host "LOG::::Python platform.machine(): $(python -c 'import platform; print(platform.machine())')"
+Write-Host "LOG::::Python platform.architecture(): $(python -c 'import platform; print(platform.architecture())')"
+Write-Host "LOG::::Python platform.processor(): $(python -c 'import platform; print(platform.processor())')"
+
+# Print uname -m using Bash in PowerShell (only works if Bash is available)
+$unameM = & bash -c "uname -m"
+Write-Host "LOG::::uname -m: $unameM"
+
+Write-Host "LOG::::Contents of $PythonArchPath after install:"
+Get-ChildItem $PythonArchPath | Write-Host
+
+$PythonExePath = Join-Path -Path $PythonArchPath -ChildPath "python.exe"
+if (Test-Path $PythonExePath) {
+    Write-Host "LOG::::python.exe is present at $PythonExePath"
+} else {
+    Write-Host "LOG::::python.exe is NOT present at $PythonExePath"
+}
+
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "LOG::::Python installation failed with exit code $LASTEXITCODE"
+    Write-Host "LOG::::Executed: cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
+    Throw "Error happened during Python installation"
+}
 if ($LASTEXITCODE -ne 0) {
     Throw "Error happened during Python installation"
 }
