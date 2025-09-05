@@ -140,14 +140,9 @@ Write-Host "LOG::::Host native architecture: $((Get-CimInstance Win32_Processor)
 $SystemArchitectureEnv = $env:PROCESSOR_ARCHITECTURE
 Write-Host "LOG::::\$SystemArchitecture from \$env:PROCESSOR_ARCHITECTURE: $SystemArchitectureEnv"
 
-# Print platform info using Python (must have python in path)
-Write-Host "LOG::::Python platform.machine(): $(python -c 'import platform; print(platform.machine())')"
-Write-Host "LOG::::Python platform.architecture(): $(python -c 'import platform; print(platform.architecture())')"
-Write-Host "LOG::::Python platform.processor(): $(python -c 'import platform; print(platform.processor())')"
-
 # Print uname -m using Bash in PowerShell (only works if Bash is available)
 $unameM = & bash -c "uname -m"
-Write-Host "LOG::::uname -m: $unameM"
+Write-Host "LOG::::uname -m:machine hardware name: $unameM"
 
 Write-Host "LOG::::Contents of $PythonArchPath after install:"
 Get-ChildItem $PythonArchPath | Write-Host
