@@ -65,13 +65,13 @@ function Get-ExecParams {
         return @("TARGETDIR=$PythonArchPath", 'ALLUSERS=1')
     }
 
-    $args = @("DefaultAllUsersTargetDir=$PythonArchPath", 'InstallAllUsers=1')
+    $installerArgs = @("DefaultAllUsersTargetDir=$PythonArchPath", 'InstallAllUsers=1')
 
     if ($IsFreeThreaded) {
-        $args += 'Include_freethreaded=1'
+        $installerArgs += 'Include_freethreaded=1'
     }
 
-    return $args
+    return $installerArgs
 }
 
 $ToolcacheRoot = $env:AGENT_TOOLSDIRECTORY
