@@ -55,23 +55,18 @@ function Remove-RegistryEntries {
 }
 
 function Get-ExecParams {
-  param(
-    [Parameter(Mandatory)][bool]   $IsMSI,
-    [Parameter(Mandatory)][bool]   $IsFreeThreaded,
-    [Parameter(Mandatory)][string] $PythonArchPath
-  )
+    param(
+        [Parameter(Mandatory)][Boolean] $IsMSI,
+        [Parameter(Mandatory)][Boolean] $IsFreeThreaded,
+        [Parameter(Mandatory)][String] $PythonArchPath
+    )
 
-  if ($IsMSI) {
-    return @("TARGETDIR=$PythonArchPath", 'ALLUSERS=1')
-  }
-
-  $args = @("DefaultAllUsersTargetDir=$PythonArchPath", 'InstallAllUsers=1')
-
-  if ($IsFreeThreaded) {
-    $args += 'Include_freethreaded=1'
-  }
-
-  return $args
+    if ($IsMSI) {
+        "TARGETDIR=$PythonArchPath ALLUSERS=1"
+    } else {
+        $Include_freethreaded = if ($IsFreeThreaded) { "Include_freethreaded=1" } else { "" }
+        "DefaultAllUsersTargetDir=$PythonArchPath InstallAllUsers=1 $Include_freethreaded"
+    }
 }
 
 $ToolcacheRoot = $env:AGENT_TOOLSDIRECTORY
@@ -97,21 +92,13 @@ if (-Not (Test-Path $PythonToolcachePath)) {
 
 Write-Host "Check if current Python version is installed..."
 $InstalledVersions = Get-Item "$PythonToolcachePath\$MajorVersion.$MinorVersion.*\$Architecture"
-Write-Host $InstalledVersions
+
 if ($null -ne $InstalledVersions) {
     Write-Host "Python$MajorVersion.$MinorVersion ($Architecture) was found in $PythonToolcachePath..."
 
     foreach ($InstalledVersion in $InstalledVersions) {
         if (Test-Path -Path $InstalledVersion) {
             Write-Host "Deleting $InstalledVersion..."
-            $InstallerExe = Get-Item "$InstalledVersion\python-$MajorVersion.$MinorVersion.*-$HardwareArchitecture.exe"
-            if (-not $InstallerExe) {
-              throw "No installer exe found in $InstalledVersion for $MajorVersion.$MinorVersion ($HardwareArchitecture)"
-            }
-            $proc = Start-Process -FilePath $InstallerExe.FullName `
-                      -ArgumentList ('/uninstall', '/quiet') `
-                      -Wait -PassThru
-            if ($proc.ExitCode -ne 0) { throw "Uninstaller failed with exit code $($proc.ExitCode)" }
             Remove-Item -Path $InstalledVersion -Recurse -Force
             if (Test-Path -Path "$($InstalledVersion.Parent.FullName)/${Architecture}.complete") {
                 Remove-Item -Path "$($InstalledVersion.Parent.FullName)/${Architecture}.complete" -Force -Verbose
@@ -134,11 +121,10 @@ Copy-Item -Path ./$PythonExecName -Destination $PythonArchPath | Out-Null
 Write-Host "Install Python $Version in $PythonToolcachePath..."
 $ExecParams = Get-ExecParams -IsMSI $IsMSI -IsFreeThreaded $IsFreeThreaded -PythonArchPath $PythonArchPath
 
-$proc = Start-Process -FilePath (Join-Path $PythonArchPath $PythonExecName) `
-  -ArgumentList ($ExecParams + '/quiet') `
-  -Wait -PassThru
-
-if ($proc.ExitCode -ne 0) { throw "Installer failed with exit code $($proc.ExitCode)" }
+cmd.exe /c "cd $PythonArchPath && call $PythonExecName $ExecParams /quiet"
+if ($LASTEXITCODE -ne 0) {
+    Throw "Error happened during Python installation"
+}
 
 if ($IsFreeThreaded) {
     # Delete python.exe and create a symlink to free-threaded exe
@@ -152,10 +138,10 @@ New-Item -Path "$PythonArchPath\python3.exe" -ItemType SymbolicLink -Value "$Pyt
 Write-Host "Install and upgrade Pip"
 $Env:PIP_ROOT_USER_ACTION = "ignore"
 $PythonExePath = Join-Path -Path $PythonArchPath -ChildPath "python.exe"
-& $PythonExePath -m ensurepip
-if ($LASTEXITCODE -ne 0) { throw "Error happened during ensurepip" }
-& $PythonExePath -m pip install --upgrade --force-reinstall pip --no-warn-script-location
-if ($LASTEXITCODE -ne 0) { throw "Error happened during pip installation / upgrade" }
+cmd.exe /c "$PythonExePath -m ensurepip && $PythonExePath -m pip install --upgrade --force-reinstall pip --no-warn-script-location"
+if ($LASTEXITCODE -ne 0) {
+    Throw "Error happened during pip installation / upgrade"
+}
 
 Write-Host "Create complete file"
 New-Item -ItemType File -Path $PythonVersionPath -Name "$Architecture.complete" | Out-Null
