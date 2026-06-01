@@ -1,18 +1,1 @@
-[
-  {
-    "version": "3.13.10",
-    "stable": true,
-    "release_url": "https://github.com/priyagupta108/python-versions/releases/tag/3.13.10-25103944252",
-    "files": [
-      {
-        "filename": "python-3.13.10-linux-22.04-x64.tar.gz",
-        "arch": "x64",
-        "platform": "linux",
-        "platform_version": "22.04",
-        "download_url": "https://github.com/priyagupta108/python-versions/releases/download/3.13.10-25103944252/python-3.13.10-linux-22.04-x64.tar.gz"
-      },
-      {
-        "filename": "python-3.13.10-darwin-arm64.tar.gz",
-        "arch": "arm64",
-        "platform": "dar
-        
+[]
